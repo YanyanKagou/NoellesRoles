@@ -21,6 +21,9 @@
     ],
     "cardinal-components": [
       "org.agmas.noellesroles.NoellesRolesComponents"
+    ],
+    "voicechat": [
+      "org.agmas.noellesroles.voice.NoellesrolesVoiceChatPlugin"
     ]
   },
 
@@ -28,7 +31,9 @@
     "cardinal-components": [
       "noellesroles:morphling",
       "noellesroles:bartender",
-      "noellesroles:ability"
+      "noellesroles:ability",
+      "noellesroles:voodoo",
+      "noellesroles:config"
     ]
   },
   "mixins": [
@@ -41,7 +46,7 @@
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
-    "yet_another_config_lib_v3": ">=3.8.0+1.21.1-fabric",
-    "minecraft": "${minecraft_version}"
+    "minecraft": "${minecraft_version}",
+    "harpymodloader": "*"
   }
 }

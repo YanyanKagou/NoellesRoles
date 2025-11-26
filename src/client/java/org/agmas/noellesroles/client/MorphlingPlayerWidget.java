@@ -39,9 +39,9 @@ public class MorphlingPlayerWidget extends ButtonWidget{
             PlayerSkinDrawer.draw(context, disguiseTarget.getSkinTextures().texture(), this.getX(), this.getY(), 16);
             if (this.isHovered()) {
                 this.drawShopSlotHighlight(context, this.getX(), this.getY(), 0);
+                context.drawTooltip(MinecraftClient.getInstance().textRenderer, disguiseTarget.getName(), this.getX() - 4 - MinecraftClient.getInstance().textRenderer.getWidth(disguiseTarget.getName()) / 2, this.getY() - 9);
             }
 
-            context.drawTooltip(MinecraftClient.getInstance().textRenderer, disguiseTarget.getName(), this.getX() - 4 - MinecraftClient.getInstance().textRenderer.getWidth(disguiseTarget.getName()) / 2, this.getY() - 9);
         }
 
         if ((MorphlingPlayerComponent.KEY.get(MinecraftClient.getInstance().player)).getMorphTicks() < 0) {
@@ -51,9 +51,9 @@ public class MorphlingPlayerWidget extends ButtonWidget{
             PlayerSkinDrawer.draw(context, disguiseTarget.getSkinTextures().texture(), this.getX(), this.getY(), 16);
             if (this.isHovered()) {
                 this.drawShopSlotHighlight(context, this.getX(), this.getY(), 0);
+                context.drawTooltip(MinecraftClient.getInstance().textRenderer, disguiseTarget.getName(), this.getX() - 4 - MinecraftClient.getInstance().textRenderer.getWidth(disguiseTarget.getName()) / 2, this.getY() - 9);
             }
 
-            context.drawTooltip(MinecraftClient.getInstance().textRenderer, disguiseTarget.getName(), this.getX() - 4 - MinecraftClient.getInstance().textRenderer.getWidth(disguiseTarget.getName()) / 2, this.getY() - 9);
 
             context.setShaderColor(1f,1f,1f,1f);
             context.drawText(MinecraftClient.getInstance().textRenderer, -MorphlingPlayerComponent.KEY.get(MinecraftClient.getInstance().player).getMorphTicks()/20+"",this.getX(),this.getY(), Color.RED.getRGB(),true);

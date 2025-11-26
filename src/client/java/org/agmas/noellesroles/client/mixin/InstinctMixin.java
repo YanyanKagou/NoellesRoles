@@ -1,5 +1,6 @@
 package org.agmas.noellesroles.client.mixin;
 
+import dev.doctor4t.trainmurdermystery.api.Role;
 import dev.doctor4t.trainmurdermystery.api.TMMRoles;
 import dev.doctor4t.trainmurdermystery.cca.GameWorldComponent;
 import dev.doctor4t.trainmurdermystery.client.TMMClient;
@@ -55,14 +56,6 @@ public abstract class InstinctMixin {
             if (!((PlayerEntity)target).isSpectator()) {
                 if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, Noellesroles.JESTER) && TMMClient.isPlayerAliveAndInSurvival()) {
                     cir.setReturnValue(Color.PINK.getRGB());
-                }
-                if (GameFunctions.isPlayerSpectatingOrCreative(MinecraftClient.getInstance().player)) {
-                    TMMRoles.Role role = gameWorldComponent.getRole((PlayerEntity) target);
-                    if (role == null) {
-                        cir.setReturnValue(TMMRoles.CIVILIAN.color());
-                    } else {
-                        cir.setReturnValue(role.color());
-                    }
                 }
             }
         }

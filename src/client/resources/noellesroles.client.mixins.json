@@ -4,14 +4,13 @@
   "package": "org.agmas.noellesroles.client.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "CustomRolesRoleNameRendererMixin",
     "InstinctMixin",
     "morphling.MorphlingRendererMixin",
     "morphling.MorphlingRoleNameRendererMixin",
     "morphling.MorphlingScreenMixin",
     "phantom.PhantomHudMixin",
     "swapper.SwapperScreenMixin",
-    "InnocenceReliantWinTextMixin"
+    "voodoo.VoodoScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

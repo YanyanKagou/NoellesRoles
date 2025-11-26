@@ -17,8 +17,11 @@ public class NoellesRolesConfig {
                     .setJson5(true)
                     .build())
             .build();
-    @SerialEntry(comment = "Disables roles from being in the role pool. use /getAllRoles to get role names, use /banRoles and /unbanRoles to ban/unban them in-game (saves here). Some roles are disabled by default due to being shitposts.")
-    public List<String> disabled = List.of("awesome_binglus");
+
+    @SerialEntry(comment = "Whether insane players will randomly see people as morphed.")
+    public boolean insanePlayersSeeMorphs = true;
+    @SerialEntry(comment = "Allows the shitpost roles to retain their disable/enable state after a server restart")
+    public boolean shitpostRoles = false;
 
 
 }

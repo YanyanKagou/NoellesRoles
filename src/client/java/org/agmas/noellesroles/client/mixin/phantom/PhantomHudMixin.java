@@ -9,6 +9,7 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.util.Colors;
 import org.agmas.noellesroles.AbilityPlayerComponent;
 import org.agmas.noellesroles.Noellesroles;
+import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,7 +26,7 @@ public abstract class PhantomHudMixin {
         AbilityPlayerComponent abilityPlayerComponent = (AbilityPlayerComponent) AbilityPlayerComponent.KEY.get(MinecraftClient.getInstance().player);
         if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, Noellesroles.PHANTOM)) {
             int drawY = context.getScaledWindowHeight();
-            String line = "Use G to go invisible!";
+            String line = "Use " + NoellesrolesClient.abilityBind.getBoundKeyTranslationKey() + " to go invisible!";
 
             if (abilityPlayerComponent.cooldown > 0) {
                 line = "Ability usable in " + abilityPlayerComponent.cooldown/20 + "s";

@@ -1,9 +1,13 @@
 package org.agmas.noellesroles;
 
+import dev.doctor4t.trainmurdermystery.api.Role;
 import dev.doctor4t.trainmurdermystery.api.TMMRoles;
 import dev.doctor4t.trainmurdermystery.cca.GameWorldComponent;
 import dev.doctor4t.trainmurdermystery.client.gui.RoleAnnouncementTexts;
+import dev.doctor4t.trainmurdermystery.event.AllowPlayerDeath;
 import dev.doctor4t.trainmurdermystery.game.GameConstants;
+import dev.doctor4t.trainmurdermystery.game.GameFunctions;
+import dev.doctor4t.trainmurdermystery.index.TMMItems;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -16,14 +20,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import org.agmas.noellesroles.commands.ForceRoleCommand;
-import org.agmas.noellesroles.commands.ListRolesCommand;
-import org.agmas.noellesroles.commands.SetEnabledRoleCommand;
+import org.agmas.harpymodloader.Harpymodloader;
+import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
+import org.agmas.harpymodloader.events.ModdedRoleAssigned;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.agmas.noellesroles.morphling.MorphlingPlayerComponent;
 import org.agmas.noellesroles.packet.AbilityC2SPacket;
 import org.agmas.noellesroles.packet.MorphC2SPacket;
 import org.agmas.noellesroles.packet.SwapperC2SPacket;
+import org.agmas.noellesroles.voodoo.VoodooPlayerComponent;
 
 import java.awt.*;
 import java.lang.reflect.Constructor;
@@ -34,35 +39,37 @@ public class Noellesroles implements ModInitializer {
 
     public static String MOD_ID = "noellesroles";
 
-    public static HashMap<Identifier, Integer> rolePlayerCaps = new HashMap<>();
-    public static HashMap<PlayerEntity, TMMRoles.Role> forceRoles = new HashMap<>();
-    public static HashMap<RoleAnnouncementTexts.RoleAnnouncementText, Boolean> roleAnnouncementIsEvil = new HashMap<>();
 
     public static Identifier JESTER_ID = Identifier.of(MOD_ID, "jester");
     public static Identifier MORPHLING_ID = Identifier.of(MOD_ID, "morphling");
-    public static Identifier HOST_ID = Identifier.of(MOD_ID, "host");
+    public static Identifier CONDUCTOR_ID = Identifier.of(MOD_ID, "conductor");
     public static Identifier BARTENDER_ID = Identifier.of(MOD_ID, "bartender");
     public static Identifier NOISEMAKER_ID = Identifier.of(MOD_ID, "noisemaker");
     public static Identifier PHANTOM_ID = Identifier.of(MOD_ID, "phantom");
     public static Identifier AWESOME_BINGLUS_ID = Identifier.of(MOD_ID, "awesome_binglus");
     public static Identifier SWAPPER_ID = Identifier.of(MOD_ID, "swapper");
+    public static Identifier VOODOO_ID = Identifier.of(MOD_ID, "voodoo");
+    public static Identifier THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES_ID = Identifier.of(MOD_ID, "the_insane_damned_paranoid_killer");
 
-    public static HashMap<TMMRoles.Role, RoleAnnouncementTexts.RoleAnnouncementText> roleRoleAnnouncementTextHashMap = new HashMap<>();
-    public static TMMRoles.Role JESTER = trueRegisterRole(new TMMRoles.Role(JESTER_ID,new Color(255,86,243).getRGB() ,false,false));
-    public static TMMRoles.Role MORPHLING =trueRegisterRole(new TMMRoles.Role(MORPHLING_ID, new Color(170, 2, 61).getRGB(),false,true));
-    public static TMMRoles.Role HOST =trueRegisterRole(new TMMRoles.Role(HOST_ID, new Color(255, 205, 84).getRGB(),true,false));
-    public static TMMRoles.Role AWESOME_BINGLUS = trueRegisterRole(new TMMRoles.Role(AWESOME_BINGLUS_ID, new Color(155, 255, 168).getRGB(),true,false));
+    public static HashMap<Role, RoleAnnouncementTexts.RoleAnnouncementText> roleRoleAnnouncementTextHashMap = new HashMap<>();
+    public static Role JESTER = TMMRoles.registerRole(new Role(JESTER_ID,new Color(255,86,243).getRGB() ,false,false, Role.MoodType.FAKE,Integer.MAX_VALUE,false));
+    public static Role MORPHLING =TMMRoles.registerRole(new Role(MORPHLING_ID, new Color(170, 2, 61).getRGB(),false,true, Role.MoodType.FAKE,Integer.MAX_VALUE,true));
+    public static Role CONDUCTOR =TMMRoles.registerRole(new Role(CONDUCTOR_ID, new Color(255, 205, 84).getRGB(),true,false, Role.MoodType.REAL,TMMRoles.CIVILIAN.getMaxSprintTime(),false));
+    public static Role AWESOME_BINGLUS = TMMRoles.registerRole(new Role(AWESOME_BINGLUS_ID, new Color(155, 255, 168).getRGB(),true,false, Role.MoodType.REAL,TMMRoles.CIVILIAN.getMaxSprintTime(),false));
 
-    public static TMMRoles.Role BARTENDER =trueRegisterRole(new TMMRoles.Role(BARTENDER_ID, new Color(217,241,240).getRGB(),true,false));
-    public static TMMRoles.Role NOISEMAKER =trueRegisterRole(new TMMRoles.Role(NOISEMAKER_ID, new Color(200, 255, 0).getRGB(),true,false));
-    public static TMMRoles.Role SWAPPER = trueRegisterRole(new TMMRoles.Role(SWAPPER_ID, new Color(63, 0, 255).getRGB(),false,true));
-    public static TMMRoles.Role PHANTOM =trueRegisterRole(new TMMRoles.Role(PHANTOM_ID, new Color(80, 5, 5, 192).getRGB(),false,true));
+    public static Role BARTENDER =TMMRoles.registerRole(new Role(BARTENDER_ID, new Color(217,241,240).getRGB(),true,false, Role.MoodType.REAL,TMMRoles.CIVILIAN.getMaxSprintTime(),false));
+    public static Role NOISEMAKER =TMMRoles.registerRole(new Role(NOISEMAKER_ID, new Color(200, 255, 0).getRGB(),true,false, Role.MoodType.REAL,TMMRoles.CIVILIAN.getMaxSprintTime(),false));
+    public static Role SWAPPER = TMMRoles.registerRole(new Role(SWAPPER_ID, new Color(63, 0, 255).getRGB(),false,true, Role.MoodType.FAKE,Integer.MAX_VALUE,false));
+    public static Role PHANTOM =TMMRoles.registerRole(new Role(PHANTOM_ID, new Color(80, 5, 5, 192).getRGB(),false,true, Role.MoodType.FAKE,Integer.MAX_VALUE,false));
+
+    public static Role VOODOO =TMMRoles.registerRole(new Role(VOODOO_ID, new Color(128, 114, 253).getRGB(),true,false,Role.MoodType.REAL, TMMRoles.CIVILIAN.getMaxSprintTime(),false));
+    public static Role THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES =TMMRoles.registerRole(new Role(THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES_ID, new Color(255, 0, 0, 192).getRGB(),false,true, Role.MoodType.FAKE,Integer.MAX_VALUE,false));
 
 
     public static final CustomPayload.Id<MorphC2SPacket> MORPH_PACKET = MorphC2SPacket.ID;
     public static final CustomPayload.Id<SwapperC2SPacket> SWAP_PACKET = SwapperC2SPacket.ID;
     public static final CustomPayload.Id<AbilityC2SPacket> ABILITY_PACKET = AbilityC2SPacket.ID;
-    public static final ArrayList<TMMRoles.Role> VANNILA_ROLES = new ArrayList<>();
+    public static final ArrayList<Role> VANNILA_ROLES = new ArrayList<>();
     public static final ArrayList<Identifier> VANNILA_ROLE_IDS = new ArrayList<>();
     @Override
     public void onInitialize() {
@@ -78,44 +85,90 @@ public class Noellesroles implements ModInitializer {
         NoellesRolesConfig.HANDLER.load();
         ModItems.init();
 
-        rolePlayerCaps.put(JESTER_ID, 1);
-        rolePlayerCaps.put(HOST_ID, 1);
+        Harpymodloader.setRoleMaximum(JESTER_ID,1);
+        Harpymodloader.setRoleMaximum(CONDUCTOR_ID,1);
 
         PayloadTypeRegistry.playC2S().register(MorphC2SPacket.ID, MorphC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(AbilityC2SPacket.ID, AbilityC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(SwapperC2SPacket.ID, SwapperC2SPacket.CODEC);
 
+        registerEvents();
+
         registerPackets();
-        registerCommands();
     }
 
 
-    public static TMMRoles.Role trueRegisterRole(TMMRoles.Role role) {
-        TMMRoles.registerRole(role);
-        try {
-            Constructor<RoleAnnouncementTexts.RoleAnnouncementText> constructor = RoleAnnouncementTexts.RoleAnnouncementText.class.getDeclaredConstructor(String.class, int.class);
-            constructor.setAccessible(true);
-            RoleAnnouncementTexts.RoleAnnouncementText announcementText = constructor.newInstance(role.identifier().getPath(), role.color());
-            RoleAnnouncementTexts.registerRoleAnnouncementText(announcementText);
-            roleRoleAnnouncementTextHashMap.put(role,announcementText);
-            roleAnnouncementIsEvil.put(announcementText, !role.canUseKiller());;
-            return role;
-        } catch (Exception e) {
-            Log.info(LogCategory.GENERAL, e.getMessage());
+    public void registerEvents() {
+        ModdedRoleAssigned.EVENT.register((player,role)->{
+            if (role.equals(JESTER)) {
+                player.giveItemStack(ModItems.FAKE_KNIFE.getDefaultStack());
+                player.giveItemStack(ModItems.FAKE_REVOLVER.getDefaultStack());
+            }
+            if (role.equals(CONDUCTOR)) {
+                player.giveItemStack(ModItems.MASTER_KEY.getDefaultStack());
+            }
+            if (role.equals(AWESOME_BINGLUS)) {
+                player.giveItemStack(TMMItems.NOTE.getDefaultStack());
+                player.giveItemStack(TMMItems.NOTE.getDefaultStack());
+                player.giveItemStack(TMMItems.NOTE.getDefaultStack());
+                player.giveItemStack(TMMItems.NOTE.getDefaultStack());
+                player.giveItemStack(TMMItems.NOTE.getDefaultStack());
+                player.giveItemStack(TMMItems.NOTE.getDefaultStack());
+                player.giveItemStack(TMMItems.NOTE.getDefaultStack());
+                player.giveItemStack(TMMItems.NOTE.getDefaultStack());
+                player.giveItemStack(TMMItems.NOTE.getDefaultStack());
+                player.giveItemStack(TMMItems.NOTE.getDefaultStack());
+                player.giveItemStack(TMMItems.NOTE.getDefaultStack());
+                player.giveItemStack(TMMItems.NOTE.getDefaultStack());
+                player.giveItemStack(TMMItems.NOTE.getDefaultStack());
+                player.giveItemStack(TMMItems.NOTE.getDefaultStack());
+                player.giveItemStack(TMMItems.NOTE.getDefaultStack());
+                player.giveItemStack(TMMItems.NOTE.getDefaultStack());
+            }
+        });
+        if (!NoellesRolesConfig.HANDLER.instance().shitpostRoles) {
+            HarpyModLoaderConfig.HANDLER.load();
+            if (!HarpyModLoaderConfig.HANDLER.instance().disabled.contains(AWESOME_BINGLUS_ID.getPath())) {
+                HarpyModLoaderConfig.HANDLER.instance().disabled.add(AWESOME_BINGLUS_ID.getPath());
+            }
+            if (!HarpyModLoaderConfig.HANDLER.instance().disabled.contains(THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES_ID.getPath())) {
+                HarpyModLoaderConfig.HANDLER.instance().disabled.add(THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES_ID.getPath());
+            }
+            HarpyModLoaderConfig.HANDLER.save();
         }
-        return null;
+
+        AllowPlayerDeath.EVENT.register((player,id)->{
+            GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(player.getWorld());
+            if (gameWorldComponent.isRole(player, VOODOO)) {
+                VoodooPlayerComponent voodooPlayerComponent = (VoodooPlayerComponent) VoodooPlayerComponent.KEY.get(player);
+                if (voodooPlayerComponent.target != null) {
+                    PlayerEntity voodooed = player.getWorld().getPlayerByUuid(voodooPlayerComponent.target);
+                    if (voodooed != null) {
+                        if (GameFunctions.isPlayerAliveAndSurvival(voodooed) && voodooed != player) {
+                            GameFunctions.killPlayer(voodooed, true, null, Identifier.of(MOD_ID, "voodoo"));
+                        }
+                    }
+                }
+            }
+            return true;
+        });
     }
 
-
-    public static boolean isAnyModdedRole(PlayerEntity player) {
-        GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(player.getWorld());
-        return gameWorldComponent.getRole(player) != null && (gameWorldComponent.getRole(player) != TMMRoles.CIVILIAN && gameWorldComponent.getRole(player) != TMMRoles.VIGILANTE && gameWorldComponent.getRole(player) != TMMRoles.KILLER);
-    }
 
     public void registerPackets() {
         ServerPlayNetworking.registerGlobalReceiver(Noellesroles.MORPH_PACKET, (payload, context) -> {
             GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(context.player().getWorld());
 
+            if (gameWorldComponent.isRole(context.player(), VOODOO)) {
+                if (payload.player() == null) return;
+                AbilityPlayerComponent abilityPlayerComponent = (AbilityPlayerComponent) AbilityPlayerComponent.KEY.get(context.player());
+                abilityPlayerComponent.cooldown = GameConstants.getInTicks(0, 30);
+                abilityPlayerComponent.sync();
+                if (context.player().getWorld().getPlayerByUuid(payload.player()) == null) return;
+                VoodooPlayerComponent voodooPlayerComponent = (VoodooPlayerComponent) VoodooPlayerComponent.KEY.get(context.player());
+                voodooPlayerComponent.setTarget(payload.player());
+
+            }
             if (gameWorldComponent.isRole(context.player(), MORPHLING)) {
                 MorphlingPlayerComponent morphlingPlayerComponent = (MorphlingPlayerComponent) MorphlingPlayerComponent.KEY.get(context.player());
                 morphlingPlayerComponent.startMorph(payload.player());
@@ -149,14 +202,6 @@ public class Noellesroles implements ModInitializer {
                 context.player().addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 30 * 20,0,true,false,true));
                 abilityPlayerComponent.cooldown = GameConstants.getInTicks(1, 30);
             }
-        });
-    }
-
-    public void registerCommands() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            ForceRoleCommand.register(dispatcher);
-            SetEnabledRoleCommand.register(dispatcher);
-            ListRolesCommand.register(dispatcher);
         });
     }
 

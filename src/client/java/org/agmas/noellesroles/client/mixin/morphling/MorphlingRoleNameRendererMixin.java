@@ -1,11 +1,15 @@
 package org.agmas.noellesroles.client.mixin.morphling;
 
+import dev.doctor4t.trainmurdermystery.client.TMMClient;
 import dev.doctor4t.trainmurdermystery.client.gui.RoleNameRenderer;
 import net.fabricmc.loader.impl.util.log.Log;
 import net.fabricmc.loader.impl.util.log.LogCategory;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import org.agmas.noellesroles.ConfigWorldComponent;
+import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.agmas.noellesroles.morphling.MorphlingPlayerComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,6 +22,11 @@ public abstract class MorphlingRoleNameRendererMixin {
     @Redirect(method = "renderHud", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getDisplayName()Lnet/minecraft/text/Text;"))
     private static Text b(PlayerEntity instance) {
 
+        if (TMMClient.moodComponent != null) {
+            if ((ConfigWorldComponent.KEY.get(instance.getWorld())).insaneSeesMorphs && TMMClient.moodComponent.isLowerThanDepressed() && NoellesrolesClient.SHUFFLED_PLAYER_ENTRIES_CACHE.get(instance.getUuid()) != null) {
+                return Text.literal("??!?!").formatted(Formatting.OBFUSCATED);
+            }
+        }
         if (instance.isInvisible()) {
             return Text.literal("");
         }

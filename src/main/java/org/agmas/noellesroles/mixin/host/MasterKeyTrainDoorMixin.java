@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class MasterKeyTrainDoorMixin {
 
     @Redirect(method = "onUse", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
-    private boolean host(ItemStack instance, Item item) {
+    private boolean conductor(ItemStack instance, Item item) {
         return instance.isOf(TMMItems.LOCKPICK) || instance.isOf(ModItems.MASTER_KEY);
     }
 
