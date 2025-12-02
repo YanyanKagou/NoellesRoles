@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "InstinctMixin",
+    "bartender.BartenderShopMixin",
     "coroner.CoronerHudMixin",
     "morphling.MorphlingRendererMixin",
     "morphling.MorphlingRoleNameRendererMixin",
@@ -20,6 +21,8 @@
     "requireAnnotations": true
   },
   "mixins": [
+    "bartender.BartenderStoreRendererMixin",
+    "bartender.DefenseVialViewMixin",
     "executioner.ExecutionerHudMixin",
     "executioner.ExecutionerMoodRenderer",
     "jester.JesterMoodRenderer"

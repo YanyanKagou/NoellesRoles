@@ -3,9 +3,8 @@ package org.agmas.noellesroles.mixin.executioner;
 import dev.doctor4t.trainmurdermystery.api.Role;
 import dev.doctor4t.trainmurdermystery.api.TMMRoles;
 import dev.doctor4t.trainmurdermystery.cca.GameWorldComponent;
-import dev.doctor4t.trainmurdermystery.cca.PlayerPsychoComponent;
+import dev.doctor4t.trainmurdermystery.cca.PlayerShopComponent;
 import dev.doctor4t.trainmurdermystery.client.gui.RoleAnnouncementTexts;
-import dev.doctor4t.trainmurdermystery.game.GameConstants;
 import dev.doctor4t.trainmurdermystery.game.GameFunctions;
 import dev.doctor4t.trainmurdermystery.util.AnnounceWelcomePayload;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -13,7 +12,6 @@ import net.fabricmc.loader.impl.util.log.Log;
 import net.fabricmc.loader.impl.util.log.LogCategory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
@@ -27,7 +25,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 @Mixin(GameFunctions.class)
@@ -43,9 +40,7 @@ public class ExecutionerConfirmMixin {
                 if (gameWorldComponent.getRole(killer).canUseKiller()) invalidKill = true;
             }
             ExecutionerPlayerComponent executionerPlayerComponent = ExecutionerPlayerComponent.KEY.get(executioner);
-            Log.info(LogCategory.GENERAL,invalidKill+"");
-            Log.info(LogCategory.GENERAL,executionerPlayerComponent.target.toString());
-            Log.info(LogCategory.GENERAL,victim.getUuid().toString());
+            PlayerShopComponent playerShopComponent = (PlayerShopComponent) PlayerShopComponent.KEY.get(executioner);
             if (executionerPlayerComponent.target.equals(victim.getUuid()) && !invalidKill) {
                 executionerPlayerComponent.won = true;
                 ArrayList<Role> shuffledKillerRoles = new ArrayList<>(TMMRoles.ROLES);
@@ -55,7 +50,7 @@ public class ExecutionerConfirmMixin {
 
                 gameWorldComponent.addRole(executioner,shuffledKillerRoles.getFirst());
                 ModdedRoleAssigned.EVENT.invoker().assignModdedRole(executioner,shuffledKillerRoles.getFirst());
-
+                playerShopComponent.setBalance(200);
                 if (Harpymodloader.VANNILA_ROLES.contains(gameWorldComponent.getRole(executioner))) {
                     ServerPlayNetworking.send((ServerPlayerEntity) executioner, new AnnounceWelcomePayload(RoleAnnouncementTexts.ROLE_ANNOUNCEMENT_TEXTS.indexOf(TMMRoles.KILLER), gameWorldComponent.getAllKillerTeamPlayers().size(), 0));
                 } else {
