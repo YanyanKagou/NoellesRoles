@@ -43,10 +43,12 @@ public abstract class SwapperScreenMixin extends LimitedHandledScreen<PlayerScre
             int y = (height- 32) / 2;
             int x = width / 2;
             if (SwapperPlayerWidget.playerChoiceOne == null) {
-                Text text = Text.literal("Select first player to swap");
+                // Text text = Text.literal("Select first player to swap");
+                Text name = Text.translatable("hud.swapper.first_player_selection");
                 context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer, text, x - (MinecraftClient.getInstance().textRenderer.getWidth(text)/2), y + 40, Color.CYAN.getRGB());
             } else {
-                Text text = Text.literal("Select second player to swap");
+                // Text text = Text.literal("Select second player to swap");
+                Text name = Text.translatable("hud.swapper.second_player_selection");
                 context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer, text, x - (MinecraftClient.getInstance().textRenderer.getWidth(text)/2), y + 40, Color.RED.getRGB());
             }
         }

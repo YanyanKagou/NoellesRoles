@@ -39,6 +39,8 @@
   "announcement.goals.swapper": "Swap places with other players.",
   "announcement.role.swapper": "Swapper",
   "announcement.win.swapper": "Killers Win!",
+  "hud.swapper.first_player_selection": "Select first player to swap",
+  "hud.swapper.second_player_selection": "Select second player to swap",
 
   "announcement.goals.coroner": "Get information from dead bodies.",
   "announcement.role.coroner": "Coroner",
