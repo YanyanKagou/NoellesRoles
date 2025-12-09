@@ -1,14 +1,18 @@
 package org.agmas.noellesroles.client;
 
 import com.google.common.collect.Maps;
+import dev.doctor4t.ratatouille.util.TextUtils;
 import dev.doctor4t.trainmurdermystery.api.Role;
 import dev.doctor4t.trainmurdermystery.api.TMMRoles;
 import dev.doctor4t.trainmurdermystery.cca.GameWorldComponent;
 import dev.doctor4t.trainmurdermystery.cca.PlayerMoodComponent;
 import dev.doctor4t.trainmurdermystery.client.TMMClient;
+import dev.doctor4t.trainmurdermystery.client.util.TMMItemTooltips;
 import dev.doctor4t.trainmurdermystery.entity.PlayerBodyEntity;
+import dev.doctor4t.trainmurdermystery.index.TMMItems;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -19,11 +23,17 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
+import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.packet.AbilityC2SPacket;
 import org.agmas.noellesroles.packet.MorphC2SPacket;
+import org.agmas.noellesroles.packet.VultureEatC2SPacket;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
@@ -38,7 +48,6 @@ public class NoellesrolesClient implements ClientModInitializer {
 
     public static Map<UUID, UUID> SHUFFLED_PLAYER_ENTRIES_CACHE = Maps.newHashMap();
 
-    public static ArrayList<PlayerEntity> seer_revealedPlayers = new ArrayList<>();
 
     @Override
     public void onInitializeClient() {
@@ -63,20 +72,25 @@ public class NoellesrolesClient implements ClientModInitializer {
                 client.execute(() -> {
                     if (MinecraftClient.getInstance().player == null) return;
                     GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(MinecraftClient.getInstance().player.getWorld());
-                    if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, Noellesroles.SEER)) {
-                        if (target == null) return;
-                        AbilityPlayerComponent abilityPlayerComponent = (AbilityPlayerComponent) AbilityPlayerComponent.KEY.get(MinecraftClient.getInstance().player);
-                        PlayerMoodComponent moodComponent = (PlayerMoodComponent) PlayerMoodComponent.KEY.get(MinecraftClient.getInstance().player);
-                        if (moodComponent.isLowerThanMid()) return;
-                        if (abilityPlayerComponent.cooldown <= 0) {
-                            ClientPlayNetworking.send(new MorphC2SPacket(target.getUuid()));
-                            seer_revealedPlayers.add(target);
-                        }
+                    if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, Noellesroles.VULTURE)) {
+                        if (targetBody == null) return;
+                        ClientPlayNetworking.send(new VultureEatC2SPacket(targetBody.getUuid()));
                         return;
                     }
                     ClientPlayNetworking.send(new AbilityC2SPacket());
                 });
             }
         });
+
+        ItemTooltipCallback.EVENT.register(((itemStack, tooltipContext, tooltipType, list) -> {
+            tooltipHelper(ModItems.DEFENSE_VIAL, itemStack, list);
+            tooltipHelper(ModItems.DELUSION_VIAL, itemStack, list);
+        }));
+    }
+
+    public void tooltipHelper(Item item, ItemStack itemStack, List<Text> list) {
+        if (itemStack.isOf(item)) {
+            list.addAll(TextUtils.getTooltipForItem(item, Style.EMPTY.withColor(TMMItemTooltips.REGULAR_TOOLTIP_COLOR)));
+        }
     }
 }

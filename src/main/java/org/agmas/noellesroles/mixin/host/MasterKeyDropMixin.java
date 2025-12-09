@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MasterKeyDropMixin {
 
     @Inject(method = "shouldDropOnDeath", at = @At("HEAD"), cancellable = true)
-    private static void jesterJest(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+    private static void dropMasterKeyOnDeath(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
         if (stack.isOf(ModItems.MASTER_KEY)) {
             cir.setReturnValue(true);
             cir.cancel();

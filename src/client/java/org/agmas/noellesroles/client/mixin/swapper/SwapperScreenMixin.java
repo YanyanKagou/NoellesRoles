@@ -37,32 +37,30 @@ public abstract class SwapperScreenMixin extends LimitedHandledScreen<PlayerScre
 
 
     @Inject(method = "render", at = @At("HEAD"))
-    void a(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    void renderSwapperText(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(player.getWorld());
         if (gameWorldComponent.isRole(player,Noellesroles.SWAPPER)) {
-            int y = (((LimitedInventoryScreen)(Object)this).height - 32) / 2;
-            int x = ((LimitedInventoryScreen)(Object)this).width / 2;
+            int y = (height- 32) / 2;
+            int x = width / 2;
             if (SwapperPlayerWidget.playerChoiceOne == null) {
-                // Text text = Text.literal("Select first player to swap");
                 Text name = Text.translatable("hud.swapper.first_player_selection");
-                context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer, text, x - (MinecraftClient.getInstance().textRenderer.getWidth(text)/2), y + 40, Color.CYAN.getRGB());
+                context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer, name, x - (MinecraftClient.getInstance().textRenderer.getWidth(name)/2), y + 40, Color.CYAN.getRGB());
             } else {
-                // Text text = Text.literal("Select second player to swap");
                 Text name = Text.translatable("hud.swapper.second_player_selection");
-                context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer, text, x - (MinecraftClient.getInstance().textRenderer.getWidth(text)/2), y + 40, Color.RED.getRGB());
+                context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer, name, x - (MinecraftClient.getInstance().textRenderer.getWidth(name)/2), y + 40, Color.RED.getRGB());
             }
         }
     }
     @Inject(method = "init", at = @At("HEAD"))
-    void b(CallbackInfo ci) {
+    void renderSwapperHeads(CallbackInfo ci) {
         SwapperPlayerWidget.playerChoiceOne = null;
         GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(player.getWorld());
         if (gameWorldComponent.isRole(player,Noellesroles.SWAPPER)) {
             List<AbstractClientPlayerEntity> entries = MinecraftClient.getInstance().world.getPlayers();
             if (!entries.contains(player)) entries.add(player);
             int apart = 36;
-            int x = ((LimitedInventoryScreen)(Object)this).width / 2 - (entries.size()) * apart / 2 + 9;
-            int shouldBeY = (((LimitedInventoryScreen)(Object)this).height - 32) / 2;
+            int x = width / 2 - (entries.size()) * apart / 2 + 9;
+            int shouldBeY = (height - 32) / 2;
             int y = shouldBeY + 80;
 
             for(int i = 0; i < entries.size(); ++i) {

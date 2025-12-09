@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.mixin.host;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.doctor4t.trainmurdermystery.block.TrainDoorBlock;
 import dev.doctor4t.trainmurdermystery.index.TMMItems;
 import net.minecraft.item.Item;
@@ -13,9 +15,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(TrainDoorBlock.class)
 public abstract class MasterKeyTrainDoorMixin {
 
-    @Redirect(method = "onUse", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
-    private boolean conductor(ItemStack instance, Item item) {
-        return instance.isOf(TMMItems.LOCKPICK) || instance.isOf(ModItems.MASTER_KEY);
+    @WrapOperation(method = "onUse", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
+    private boolean conductor(ItemStack instance, Item item, Operation<Boolean> original) {
+        return  original.call(instance,item) || instance.isOf(ModItems.MASTER_KEY);
     }
 
 }

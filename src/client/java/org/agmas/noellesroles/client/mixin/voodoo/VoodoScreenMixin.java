@@ -38,12 +38,12 @@ public abstract class VoodoScreenMixin extends LimitedHandledScreen<PlayerScreen
         super(handler, inventory, title);
     }
     @Inject(method = "render", at = @At("HEAD"))
-    void a(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    void renderVoodooText(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(player.getWorld());
         ConfigWorldComponent configWorldComponent = (ConfigWorldComponent) ConfigWorldComponent.KEY.get(player.getWorld());
         if (gameWorldComponent.isRole(player,Noellesroles.VOODOO)) {
-            int y = (((LimitedInventoryScreen)(Object)this).height - 32) / 2;
-            int x = ((LimitedInventoryScreen)(Object)this).width / 2;
+            int y = (height- 32) / 2;
+            int x = width / 2;
             if (!configWorldComponent.naturalVoodoosAllowed) {
                 // Text text = Text.literal("Voodoo deaths must be triggered by another player!");
                 Text name = Text.translatable("hud.voodoo.deaths_must_be_triggered_by_another_player");
@@ -53,14 +53,14 @@ public abstract class VoodoScreenMixin extends LimitedHandledScreen<PlayerScreen
     }
 
     @Inject(method = "init", at = @At("HEAD"))
-    void b(CallbackInfo ci) {
+    void renderVoodooHeads(CallbackInfo ci) {
         GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(player.getWorld());
         if (gameWorldComponent.isRole(player,Noellesroles.VOODOO)) {
             List<UUID> entries = new ArrayList<>(MinecraftClient.getInstance().player.networkHandler.getPlayerUuids());
             entries.removeIf((e) -> e.equals(player.getUuid()));
             int apart = 36;
-            int x = ((LimitedInventoryScreen)(Object)this).width / 2 - (entries.size()) * apart / 2 + 9;
-            int shouldBeY = (((LimitedInventoryScreen)(Object)this).height - 32) / 2;
+            int x = width / 2 - (entries.size()) * apart / 2 + 9;
+            int shouldBeY = (height - 32) / 2;
             int y = shouldBeY + 80;
 
             for(int i = 0; i < entries.size(); ++i) {

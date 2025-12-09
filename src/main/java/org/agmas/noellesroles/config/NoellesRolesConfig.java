@@ -27,9 +27,9 @@ public class NoellesRolesConfig {
     @SerialEntry(comment = "Starting cooldown (in ticks)")
     public int generalCooldownTicks = GameConstants.getInTicks(0,30);
 
-    @SerialEntry(comment = "Seer Starting cooldown (in ticks)")
-    public int seerCooldownTicks = GameConstants.getInTicks(1,0);
-
     @SerialEntry(comment = "Allow Natural deaths to trigger voodoo (deaths without an assigned killer)")
     public boolean voodooNonKillerDeaths = false;
+
+    @SerialEntry(comment = "Makes voodoos act like Evil players when shot by a revolver (no backfire, no gun lost)")
+    public boolean voodooShotLikeEvil = true;
 }
